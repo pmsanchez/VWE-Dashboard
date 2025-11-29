@@ -1,0 +1,9 @@
+/* Make the black vertical bar full height */
+html, body {
+  height: 100%;
+  margin: 0;    
+}
+
+.bg-dark {
+  min-height: 100vh;
+}
