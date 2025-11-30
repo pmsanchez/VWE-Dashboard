@@ -1,0 +1,11 @@
+{
+  "/veryfi-api": {
+    "target": "https://api.veryfi.com/api/v8/partner",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/veryfi-api": ""
+    }
+  }
+}

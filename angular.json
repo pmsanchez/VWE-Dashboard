@@ -56,12 +56,14 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+    
           "configurations": {
             "production": {
               "buildTarget": "vwe-dashboard:build:production"
             },
             "development": {
-              "buildTarget": "vwe-dashboard:build:development"
+              "buildTarget": "vwe-dashboard:build:development",
+              "proxyConfig": "proxy.conf.json" 
             }
           },
           "defaultConfiguration": "development"
