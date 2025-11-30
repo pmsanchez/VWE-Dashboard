@@ -1,0 +1,94 @@
+/* src\app\components\receipt-manager\receipt-manager.component.css */
+
+/* Title color fix */
+.component-title {
+    color: #333; /* A dark gray that stands out against the app background */
+    font-weight: 600;
+    margin-bottom: 0; /* Align with tab buttons */
+}
+
+/* Lighter card background for better contrast */
+.bg-lighter-card {
+    background-color: #f8f9fa; /* A very light gray, almost white */
+    border: 1px solid #dee2e6; /* Lighter border */
+    color: #333; /* Default text color for inside this card */
+}
+
+/* Custom styling for the View Switcher tabs */
+.btn-tab {
+    background-color: #e9ecef; /* Lighter background for inactive tabs */
+    color: #495057; /* Darker text */
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem; /* Slightly smaller padding */
+    margin-right: 0.5rem;
+    transition: all 0.2s;
+    font-size: 0.9rem; /* Smaller font size */
+}
+
+.btn-tab:hover {
+    background-color: #e2e6ea;
+    color: #212529;
+}
+
+/* Active tab state */
+.btn-tab.active {
+    background-color: #007bff; /* Primary blue for active state */
+    color: white;
+    border-color: #007bff;
+}
+
+/* Styling for the Upload/Capture Option Cards */
+.option-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 120px; /* Reduced height */
+    font-size: 1rem; /* Smaller font size */
+    font-weight: 500;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.option-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.option-card i {
+    font-size: 1.8rem; /* Adjusted icon size */
+}
+
+/* Styling for the details box */
+.extracted-details h4 {
+    color: #6c757d; /* Muted secondary for heading */
+}
+
+.details-box {
+    border: 1px dashed #ced4da; /* Lighter dashed border */
+    border-radius: 8px;
+    background-color: #e9ecef; /* Lighter background for the box */
+    padding: 1rem; /* Slightly reduced padding */
+    font-size: 0.9rem; /* Smaller text */
+    color: #495057; /* Darker text for details */
+}
+
+/* Table styling for better visibility on light background */
+.receipt-table {
+    --bs-table-bg: #fff; /* White background for table rows */
+    --bs-table-striped-bg: #f2f2f2; /* Light stripe */
+    --bs-table-hover-bg: #e9ecef; /* Lighter hover effect */
+    color: #333; /* Dark text for table content */
+    border: 1px solid #dee2e6; /* Add a light border to the table */
+}
+
+.receipt-table thead {
+    background-color: #e9ecef; /* Header background */
+}
+
+.receipt-table th {
+    color: #333;
+    font-weight: 600;
+}

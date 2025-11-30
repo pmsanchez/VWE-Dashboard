@@ -4,6 +4,12 @@
   gap: 15px;
 }
 
+.dashboard-background {
+  background-color: #f7f2e8; /* warm creamy beige */
+  min-height: 100vh;
+  padding: 30px;
+}
+
 /* Card base */
 .dashboard-card {
   display: flex;

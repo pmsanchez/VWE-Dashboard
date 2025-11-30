@@ -1,2 +1,136 @@
-<h2>Receipt Manager</h2>
-<p class="text-muted">COMING SOON</p>
+<div class="receipt-manager-container">
+  
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="component-title">Receipt Manager</h2>
+  </div>
+
+  <div class="view-tabs mb-4">
+    <button class="btn btn-tab" 
+            [class.active]="currentView === 'capture'" 
+            (click)="switchView('capture')">
+      📥 Upload & Capture
+    </button>
+    <button class="btn btn-tab" 
+            [class.active]="currentView === 'list'" 
+            (click)="switchView('list')">
+      📋 View Receipts
+    </button>
+  </div>
+  
+  <div class="card bg-lighter-card p-4 shadow-sm content-display">
+
+    <div class="upload-view" *ngIf="currentView === 'capture'">
+      <h3 class="text-primary mb-4">New Receipt Capture</h3>
+      
+      <div class="capture-options row text-center g-3 mb-5">
+        
+        <div class="col-md-6">
+          <button class="btn btn-lg btn-success w-100 option-card" (click)="onTakePicture()">
+            <i class="bi bi-camera" style="font-size: 1.8rem;"></i>
+            <p class="mt-2 mb-0">Take Picture</p>
+          </button>
+        </div>
+        
+        <div class="col-md-6">
+          <button class="btn btn-lg btn-primary w-100 option-card" (click)="onUploadReceipt()">
+            <i class="bi bi-upload" style="font-size: 1.8rem;"></i>
+            <p class="mt-2 mb-0">Upload Receipt Image</p>
+          </button>
+        </div>
+        
+      </div>
+      
+      <div class="extracted-details" *ngIf="extractedData">
+        <h4 class="text-secondary mb-3">Extracted Details (Review & Edit)</h4>
+        
+        <div class="p-3 details-box">
+          
+          <div class="row g-3 mb-4">
+<div class="col-md-4">
+  <label class="form-label text-muted">Seminar Name</label>
+  <input type="text" class="form-control" [(ngModel)]="extractedData.seminar_name">
+</div>
+                          <div class="col-md-4">
+                  <label class="form-label text-muted">Invoice Number</label>
+                  <input type="text" class="form-control" [(ngModel)]="extractedData.invoice_number">
+              </div>
+    
+              <div class="col-md-4">
+                  <label class="form-label text-muted">Date</label>
+                  <input type="text" class="form-control" [(ngModel)]="extractedData.date">
+              </div>
+              <div class="col-md-4">
+                 <label class="form-label text-muted">Time</label>
+                  <input type="time" class="form-control" [(ngModel)]="extractedData.time">
+              </div>
+
+                        <div class="col-md-4">
+                  <label class="form-label text-muted">Vendor Name</label>
+                  <input type="text" class="form-control" [(ngModel)]="extractedData.vendor_name">
+              </div>
+
+              <div class="col-md-4">
+                  <label class="form-label text-muted">Payment Type</label>
+                  <input type="text" class="form-control" [(ngModel)]="extractedData.payment_display_name">
+              </div>
+              <div class="col-md-4">
+                  <label class="form-label text-muted">Subtotal</label>
+                  <input type="number" class="form-control" [(ngModel)]="extractedData.subtotal">
+              </div>
+              <div class="col-md-4">
+                  <label class="form-label text-muted">Tax</label>
+                  <input type="number" class="form-control" [(ngModel)]="extractedData.tax">
+              </div>
+              <div class="col-md-4">
+                  <label class="form-label text-muted">Total</label>
+                  <input type="number" class="form-control" [(ngModel)]="extractedData.total">
+              </div>
+              <div class="col-md-4">
+                  <label class="form-label text-muted">Currency</label>
+                  <input type="text" class="form-control" [(ngModel)]="extractedData.currency_code">
+              </div>
+          </div>
+          
+          <h5 class="text-secondary mb-3">Line Items</h5>
+          <div class="table-responsive">
+            <table class="table table-sm receipt-table">
+              <thead>
+                <tr>
+                  <th>Description</th>
+                  <th style="width: 100px;">Quantity</th>
+                  <th style="width: 120px;">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of extractedData.line_items; let i = index">
+                  <td><input type="text" class="form-control form-control-sm" [(ngModel)]="item.description" [ngModelOptions]="{standalone: true}"></td>
+                  <td><input type="number" class="form-control form-control-sm" [(ngModel)]="item.quantity" [ngModelOptions]="{standalone: true}"></td>
+                  <td><input type="number" class="form-control form-control-sm" [(ngModel)]="item.total" [ngModelOptions]="{standalone: true}"></td>
+                </tr>
+                <tr *ngIf="extractedData.line_items.length === 0"><td colspan="3" class="text-center text-muted">No line items extracted.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <button class="btn btn-success mt-3 float-end" disabled>Save to Supabase (Next Step)</button>
+        </div>
+        
+      </div>
+
+      <div class="alert alert-info mt-4" role="alert" *ngIf="!extractedData && selectedFile">
+          Processing {{selectedFile.name}} with Veryfi... Please wait.
+      </div>
+      
+    </div>
+    
+    <div class="query-view" *ngIf="currentView === 'list'"> 
+      <h3 class="text-primary mb-4">Archived Receipts</h3>
+      
+      <div class="table-responsive">
+        <table class="table table-dark table-striped table-hover receipt-table">
+          </table>
+      </div>
+    </div>
+
+  </div>
+</div>
