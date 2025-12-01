@@ -1,35 +1,33 @@
 // src/app/services/receipt-manager.service.ts
 
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http'; // No need for HttpHeaders anymore
 import { firstValueFrom } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ReceiptManagerService {
 
-  // This goes to your Angular proxy instead of Veryfi directly
-  private veryfiUrl = '/veryfi-api/documents';
+  // This is the URL of your new backend proxy route
+  private backendUrl = environment.backendUrl; 
 
   constructor(private http: HttpClient) {}
 
   processImage(imageBase64: string): Promise<any> {
     const payload = {
       file_name: 'receipt.jpg',
-      file_data: imageBase64,     // VERYFI EXPECTS `file_data` not file_base64
+      file_data: imageBase64,
     };
 
-    const headers = new HttpHeaders({
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'User-Agent': 'Angular-Receipt-App',
-      'Client-Id': 'vrfo3Nbx3uZ3BkzTv9lN3MDfZm93GlJY7gU1DWb',
-      'Authorization': 'apikey pedro.sanchezxp:700054940342f99bccf33809f6071e3f'
-    });
+    // The headers with credentials are now set in the backend!
+    // We only need basic headers for the request to our own server.
+    // NOTE: HttpClient often handles basic headers (Content-Type) automatically.
 
     return firstValueFrom(
-      this.http.post(this.veryfiUrl, payload, { headers })
+      // Send the payload to your secure backend
+      this.http.post(this.backendUrl, payload) 
     );
   }
 }
