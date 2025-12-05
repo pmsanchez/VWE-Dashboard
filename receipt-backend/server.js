@@ -4,13 +4,43 @@ require('dotenv').config(); // Load environment variables from .env
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+const { createClient } = require('@supabase/supabase-js'); // 💡 NEW IMPORT
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// 💡 NEW: Supabase Client Initialization using provided credentials (best practice is to use .env)
+const supabaseUrl = 'https://kferklonerkpbzbdenqq.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtmZXJrbG9uZXJrcGJ6YmRlbnFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxOTQ5ODIsImV4cCI6MjA3OTc3MDk4Mn0.FbavGWp_SQIepM-X-zV7StZzvLQaoGcIPBrE8VAHRts';
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+
 // Middleware
 app.use(cors()); // Allow cross-origin requests from your Angular app
 app.use(express.json({ limit: '50mb' })); // To handle large JSON payloads (Base64 image)
+
+// SUPPABASE INTEGRATION
+// 2. 💡 NEW: Route to Fetch Seminars
+app.get('/api/seminars', async (req, res) => {
+    try {
+        // Fetch 'id' and 'name' from the 'seminar' table
+        const { data, error } = await supabase
+            .from('seminar')
+            .select('id, name') 
+            .order('name', { ascending: true }); 
+
+        if (error) {
+            console.error('Supabase Error:', error);
+            return res.status(500).json({ message: 'Error fetching seminars from Supabase', details: error.message });
+        }
+
+        res.json(data);
+
+    } catch (error) {
+        console.error('Server Error:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
 
 // Secure route to proxy the request to Veryfi
 app.post('/api/process-receipt', async (req, res) => {

@@ -1,0 +1,39 @@
+<div class="students-manager-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="component-title">Student Manager</h2>
+        <button class="btn btn-tab active" (click)="fetchSeminars()">🔄 Refresh Seminars</button> 
+    </div>
+
+    <div class="card bg-lighter-card p-4 shadow-sm content-display">
+        
+        <div class="seminar-selection mb-4">
+            <h3 class="text-primary mb-3">Select Seminar</h3>
+            
+            <div *ngIf="isLoadingSeminars" class="alert alert-info">Loading seminar options...</div>
+            <div *ngIf="seminarErrorMessage" class="alert alert-danger">{{ seminarErrorMessage }}</div>
+
+            <select 
+                class="form-select form-control-lg" 
+                [(ngModel)]="selectedSeminarId" 
+                (change)="onSeminarChange()"
+                *ngIf="!isLoadingSeminars && !seminarErrorMessage"
+            >
+                <option [ngValue]="null" disabled>-- Select a Seminar --</option>
+                <option *ngFor="let seminar of seminars" [ngValue]="seminar.id">
+                    {{ seminar.name }}
+                </option>
+            </select>
+        </div>
+
+        <hr>
+
+        <div class="student-list-view">
+            <h3 class="text-secondary mb-4">Students List (To be implemented)</h3>
+            
+            <div class="alert alert-info text-center">
+                The student list will load here after we implement the filter logic in the next step.
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,34 @@
+/* src\app\components\students\students.component.css */
+
+/* Reused utility styling from Receipt Manager */
+
+.component-title {
+    color: #333; 
+    font-weight: 600;
+}
+
+.bg-lighter-card {
+    background-color: #f8f9fa; 
+    border: 1px solid #dee2e6; 
+    color: #333; 
+}
+
+/* Custom styling for the View Switcher tabs */
+.btn-tab {
+    background-color: #e9ecef;
+    color: #495057;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem;
+    margin-right: 0.5rem;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.btn-tab.active {
+    /* Using the gradient-2 color pattern's general aesthetic (pink/red) */
+    background-color: #ff7eb3; 
+    color: white;
+    border-color: #ff758c;
+}
+/* Note: You can add table styles here when you implement the student list */
