@@ -17,9 +17,13 @@
                 [(ngModel)]="selectedSeminarId" 
                 (change)="onSeminarChange()"
                 *ngIf="!isLoadingSeminars && !seminarErrorMessage"
+                [disabled]="isLoadingSeminars"
             >
-                <option [ngValue]="null" disabled>-- Select a Seminar --</option>
-                <option *ngFor="let seminar of seminars" [ngValue]="seminar.id">
+                <option *ngIf="selectedSeminarId === null" [ngValue]="null" disabled>
+                    -- Select a Seminar --
+                </option>
+
+                <option *ngFor="let seminar of seminars" [ngValue]="String(seminar.id)">
                     {{ seminar.name }}
                 </option>
             </select>
@@ -43,7 +47,7 @@
             </div>
 
             <div *ngIf="!isLoadingStudents && !studentsErrorMessage && students.length === 0 && selectedSeminarId !== null" 
-                 class="alert alert-warning text-center">
+                    class="alert alert-warning text-center">
                 No students found for this seminar.
             </div>
 

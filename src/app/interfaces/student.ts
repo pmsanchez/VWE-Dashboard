@@ -3,7 +3,6 @@
 export interface Student {
   id: number; // serial not null
   stud_id: string | null; // character varying(10) null
-  seminar_id: string; // character varying(10) not null (This is the FK to seminar.sem_id)
   name: string; // text not null (Student's Full Name)
   street_city: string; // text not null (Address part 1)
   city: string; // text not null (City)

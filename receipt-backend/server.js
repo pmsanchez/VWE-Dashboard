@@ -26,8 +26,8 @@ app.get('/api/seminars', async (req, res) => {
         // Fetch 'id' and 'name' from the 'seminar' table
         const { data, error } = await supabase
             .from('seminar')
-            .select('id, name') 
-            .order('name', { ascending: true }); 
+            .select('id, sem_id, name, start_date')
+            .order('start_date', { ascending: true });
 
         if (error) {
             console.error('Supabase Error:', error);
@@ -43,34 +43,60 @@ app.get('/api/seminars', async (req, res) => {
 });
 
 
-// 💡 NEW: Route to Fetch Students for a specific Seminar ID
+// Route to Fetch Students for a specific Seminar ID (using junction table)
 app.get('/api/students/:seminarId', async (req, res) => {
-    const seminarId = req.params.seminarId;
+    const seminarPkId = req.params.seminarId; // The numeric ID from Angular
 
-    if (!seminarId) {
-        return res.status(400).json({ message: 'Missing seminarId parameter.' });
-    }
-    
-    // Convert seminarId to integer for safer querying
-    const id = parseInt(seminarId, 10);
+    // 1. Convert to integer and validate
+    const id = parseInt(seminarPkId, 10);
     if (isNaN(id)) {
         return res.status(400).json({ message: 'Invalid seminarId format.' });
     }
 
     try {
-        // Fetch students where seminar_id matches the provided ID
-        const { data, error } = await supabase
-            .from('student') // Assuming the table is named 'student'
-            .select('*') // Select all columns for now, as requested
-            .eq('seminar_id', id) // 💡 KEY: Filter by the foreign key
-            .order('name', { ascending: true }); 
+        // --- STEP 1: Get the 'sem_id' (Text Key) from the 'seminar' table ---
+        const { data: seminarData, error: seminarError } = await supabase
+            .from('seminar')
+            .select('sem_id') // We need the text key 'sem_id'
+            .eq('id', id)      // Filter by the numeric Primary Key 'id'
+            .single();
 
-        if (error) {
-            console.error('Supabase Error fetching students:', error);
-            return res.status(500).json({ message: 'Error fetching students from Supabase', details: error.message });
+        if (seminarError || !seminarData) {
+            console.error('Supabase Error: Could not find sem_id:', seminarError || 'No seminar found');
+            // If seminar is not found, return an empty array instead of 500
+            return res.status(200).json([]); 
         }
 
-        res.json(data);
+        const semIdText = seminarData.sem_id;
+
+        // --- STEP 2: Use the text key (sem_id) to join through seminar_registration ---
+        // We select the student details by joining seminar_registration and student.
+        // Supabase allows us to navigate the relationship back to 'student'.
+        // Since the foreign key in seminar_registration is stud_id (text), 
+        // we join to the student table where student.stud_id = seminar_registration.stud_id
+        
+        const { data: studentsData, error: studentsError } = await supabase
+            .from('seminar_registration') // Start the query at the junction table
+            .select(`
+                student (
+                    id, stud_id, name, street_city, city, province, 
+                    country_code, email, phone, type_size, tshirt_size, 
+                    hoodie_size, food_allergies, allergy_details, comments, 
+                    observations, insertion_date, insertion_time, seminar_attendances
+                )
+            `)
+            .eq('sem_id', semIdText) // Filter the registrations by the seminar's text key
+
+        if (studentsError) {
+            console.error('Supabase Error fetching students:', studentsError);
+            return res.status(500).json({ message: 'Error fetching students from Supabase', details: studentsError.message });
+        }
+        
+        // The result structure will be { student: { ...data... } }
+        // We need to map it to an array of just the student objects.
+        const students = studentsData.map(reg => reg.student);
+
+        res.json(students);
 
     } catch (error) {
         console.error('Server Error:', error);
