@@ -1,7 +1,7 @@
 <div class="students-manager-container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="component-title">Student Manager</h2>
-        <button class="btn btn-tab active" (click)="fetchSeminars()">🔄 Refresh Seminars</button> 
+        <button class="btn btn-tab active" (click)="fetchSeminars()">🔄 Refresh Data</button> 
     </div>
 
     <div class="card bg-lighter-card p-4 shadow-sm content-display">
@@ -28,10 +28,59 @@
         <hr>
 
         <div class="student-list-view">
-            <h3 class="text-secondary mb-4">Students List (To be implemented)</h3>
-            
-            <div class="alert alert-info text-center">
-                The student list will load here after we implement the filter logic in the next step.
+            <h3 class="text-secondary mb-4">Students List</h3> 
+
+            <div *ngIf="selectedSeminarId === null && !isLoadingSeminars" class="alert alert-warning text-center">
+                Please select a seminar from the dropdown above to view students.
+            </div>
+
+            <div *ngIf="isLoadingStudents" class="alert alert-info text-center">
+                Loading students for the selected seminar...
+            </div>
+
+            <div *ngIf="studentsErrorMessage" class="alert alert-danger">
+                Error: {{ studentsErrorMessage }}
+            </div>
+
+            <div *ngIf="!isLoadingStudents && !studentsErrorMessage && students.length === 0 && selectedSeminarId !== null" 
+                 class="alert alert-warning text-center">
+                No students found for this seminar.
+            </div>
+
+            <div class="table-responsive" *ngIf="students.length > 0">
+                <table class="table table-striped table-hover receipt-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Student ID</th>
+                            <th>Email</th>
+                            <th>T-Shirt/Hoodie</th>
+                            <th>Allergies</th>
+                            <th>City</th>
+                            <th>Phone</th>
+                            <th>Attendance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let student of students">
+                            <td>{{ student.name }}</td>
+                            <td>{{ student.stud_id || 'N/A' }}</td>
+                            <td>{{ student.email || 'N/A' }}</td>
+                            <td>{{ student.tshirt_size }} / {{ student.hoodie_size }}</td>
+                            <td>
+                                <span [class]="student.food_allergies ? 'text-danger' : 'text-success'">
+                                    {{ student.food_allergies ? 'YES' : 'No' }}
+                                </span>
+                                <span *ngIf="student.allergy_details" class="text-muted small d-block">
+                                    ({{ student.allergy_details }})
+                                </span>
+                            </td>
+                            <td>{{ student.city }}, {{ student.country_code }}</td>
+                            <td>{{ student.phone }}</td>
+                            <td>{{ student.seminar_attendances || 0 }}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 

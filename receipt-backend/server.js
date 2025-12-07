@@ -42,6 +42,43 @@ app.get('/api/seminars', async (req, res) => {
     }
 });
 
+
+// 💡 NEW: Route to Fetch Students for a specific Seminar ID
+app.get('/api/students/:seminarId', async (req, res) => {
+    const seminarId = req.params.seminarId;
+
+    if (!seminarId) {
+        return res.status(400).json({ message: 'Missing seminarId parameter.' });
+    }
+    
+    // Convert seminarId to integer for safer querying
+    const id = parseInt(seminarId, 10);
+    if (isNaN(id)) {
+        return res.status(400).json({ message: 'Invalid seminarId format.' });
+    }
+
+    try {
+        // Fetch students where seminar_id matches the provided ID
+        const { data, error } = await supabase
+            .from('student') // Assuming the table is named 'student'
+            .select('*') // Select all columns for now, as requested
+            .eq('seminar_id', id) // 💡 KEY: Filter by the foreign key
+            .order('name', { ascending: true }); 
+
+        if (error) {
+            console.error('Supabase Error fetching students:', error);
+            return res.status(500).json({ message: 'Error fetching students from Supabase', details: error.message });
+        }
+
+        res.json(data);
+
+    } catch (error) {
+        console.error('Server Error:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+
 // Secure route to proxy the request to Veryfi
 app.post('/api/process-receipt', async (req, res) => {
   const veryfiUrl = process.env.VERYFI_URL;

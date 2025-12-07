@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Seminar } from '../interfaces/seminar'; // Import the interface
+import { Student } from '../interfaces/student'; // Import the Student interface
 
 @Injectable({
   providedIn: 'root'
@@ -26,4 +27,15 @@ export class StudentService {
       this.http.get<Seminar[]>(url)
     );
   }
+
+    // Method to fetch students for a specific seminar ID
+  getStudents(seminarId: string): Promise<Student[]> { // 💡 seminarId must be string/char
+    // Note: The backend will handle routing with the seminar ID
+    const url = `${this.backendBaseUrl}/api/students/${seminarId}`; 
+    
+    return firstValueFrom(
+      this.http.get<Student[]>(url) // Uses the new Student interface type
+    );
+  }
+
 }
