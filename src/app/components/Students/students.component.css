@@ -64,13 +64,21 @@
     color: #333;
 }
 
+/* --- STYLES FOR TABLE, PAGINATION, AND SEARCH --- */
+
 /* Ensure the table itself has a minimum width to force horizontal scrolling */
 .table-responsive table {
-    min-width: 1200px; /* Adjust this value (e.g., 1200px) based on your content density */
+    min-width: 1200px; /* Adjust this value based on your content density */
     white-space: nowrap; /* Prevents text wrapping inside cells */
 }
 
-/* Optional: Better styling for the pagination controls */
+/* Styling for the search bar container */
+.search-filter-controls {
+    /* Ensures some separation above the table */
+    padding-bottom: 5px; 
+}
+
+/* Styling for the pagination controls */
 .pagination .page-item a {
     cursor: pointer;
 }

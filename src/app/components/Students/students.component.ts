@@ -23,6 +23,8 @@ export class StudentsComponent implements OnInit {
   isLoadingSeminars: boolean = true;
   seminarErrorMessage: string | null = null;
   selectedSeminarDetails: Seminar | null = null; // <--- NEW PROPERTY
+  // --- New State for Search/Filter ---
+  searchTerm: string = ''; // <--- NEW PROPERTY
 
   // --- Student List State (for the Table) ---
   students: Student[] = [];
@@ -45,16 +47,23 @@ export class StudentsComponent implements OnInit {
  * Returns the total number of pages required.
  */
 get totalPages(): number {
-  return Math.ceil(this.students.length / this.pageSize);
+  // Calculate pages based on the filtered list, not the full list
+    return Math.ceil(this.filteredStudents.length / this.pageSize);
 }
 
 /**
  * Returns the subset of students for the current page.
  */
 get paginatedStudents(): Student[] {
-  const startIndex = (this.currentPage - 1) * this.pageSize;
-  const endIndex = startIndex + this.pageSize;
-  return this.students.slice(startIndex, endIndex);
+const studentsToPaginate = this.filteredStudents;
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    return studentsToPaginate.slice(startIndex, endIndex);
+}
+
+// Reset currentPage when search term changes or new students are fetched
+onSearchChange(): void {
+    this.currentPage = 1;
 }
 
   // --- 1. Seminar Data Fetching (Dropdown Population) ---
@@ -165,6 +174,7 @@ onSeminarChange(): void {
 
       // 💡 Reset pagination here!
       this.currentPage = 1;
+      this.searchTerm = ''; // <--- Optional: Clear search term on new seminar load
       
     } catch (error: any) {
       console.error(`Failed to load students for seminar ${seminarId}:`, error);
@@ -196,5 +206,22 @@ onSeminarChange(): void {
     }
   }
 
+get filteredStudents(): Student[] {
+    let students = this.students;
+    const term = this.searchTerm.toLowerCase();
+
+    if (term) {
+        students = students.filter(student => 
+            // Search criteria: Name, Student ID, or Email
+            student.name.toLowerCase().includes(term) ||
+            (student.stud_id?.toLowerCase() || '').includes(term) ||
+            (student.email?.toLowerCase() || '').includes(term)
+        );
+    }
+    
+    // NOTE: If you add status filtering later, it would go here.
+
+    return students;
+}
 // ... rest of the component
 }
