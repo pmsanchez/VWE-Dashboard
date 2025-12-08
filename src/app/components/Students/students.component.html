@@ -32,28 +32,31 @@
         <div class="seminar-details-box mb-4" *ngIf="selectedSeminarDetails">
             <h4 class="text-secondary mb-3">Seminar Details</h4>
             <div class="details-grid">
+                
                 <div class="detail-item">
                     <label class="text-muted">Name:</label>
                     <p class="mb-0 text-primary">{{ selectedSeminarDetails.name }}</p>
                 </div>
-<div class="details-grid">
-    <div class="detail-item">
-        <label class="text-muted">Location:</label>
-        <p class="mb-0">
-            {{ selectedSeminarDetails.location_name }} 
-            <span class="text-muted small">({{ selectedSeminarDetails.location_country_code }})</span>
-        </p>
-    </div>
-    </div>
+
+                <div class="detail-item">
+                    <label class="text-muted">Location:</label>
+                    <p class="mb-0">
+                        {{ selectedSeminarDetails.location_name }} 
+                        <span class="text-muted small">({{ selectedSeminarDetails.location_country_code }})</span>
+                    </p>
+                </div>
+                
                 <div class="detail-item">
                     <label class="text-muted">Start Date:</label>
                     <p class="mb-0">{{ selectedSeminarDetails.start_date | date }}</p>
                 </div>
+                
                 <div class="detail-item">
                     <label class="text-muted">End Date:</label>
                     <p class="mb-0">{{ selectedSeminarDetails.end_date | date }}</p>
                 </div>
             </div>
+            
             <div class="mt-3">
                 <label class="text-muted">Description:</label>
                 <p class="small text-wrap">{{ selectedSeminarDetails.description || 'No description provided.' }}</p>
@@ -92,6 +95,10 @@
                             <th>Allergies</th>
                             <th>City</th>
                             <th>Phone</th>
+                            <th>Role</th>
+                            <th>Diet</th>
+                            <th>Status</th>
+                            <th>Comments</th>
                             <th>Attendance</th>
                         </tr>
                     </thead>
@@ -111,6 +118,14 @@
                             </td>
                             <td>{{ student.city }}, {{ student.country_code }}</td>
                             <td>{{ student.phone }}</td>
+                            
+                            <td>{{ student.position }}</td>
+                            <td>{{ student.diet_type }}</td>
+                            <td>{{ student.status }}</td>
+                            <td>
+                                <span *ngIf="student.comments" title="{{ student.comments }}">View</span>
+                                <span *ngIf="!student.comments">N/A</span>
+                            </td>
                             <td>{{ student.seminar_attendances || 0 }}</td>
                         </tr>
                     </tbody>
@@ -118,21 +133,21 @@
             </div>
 
             <nav *ngIf="totalPages > 1" aria-label="Student Pagination">
-    <ul class="pagination justify-content-center">
-        <li class="page-item" [class.disabled]="currentPage === 1">
-            <a class="page-link" (click)="changePage(currentPage - 1)">Previous</a>
-        </li>
-        
-        <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index" 
-            [class.active]="currentPage === i + 1">
-            <a class="page-link" (click)="changePage(i + 1)">{{ i + 1 }}</a>
-        </li>
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" [class.disabled]="currentPage === 1">
+                        <a class="page-link" (click)="changePage(currentPage - 1)">Previous</a>
+                    </li>
+                    
+                    <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index" 
+                        [class.active]="currentPage === i + 1">
+                        <a class="page-link" (click)="changePage(i + 1)">{{ i + 1 }}</a>
+                    </li>
 
-        <li class="page-item" [class.disabled]="currentPage === totalPages">
-            <a class="page-link" (click)="changePage(currentPage + 1)">Next</a>
-        </li>
-    </ul>
-</nav>
+                    <li class="page-item" [class.disabled]="currentPage === totalPages">
+                        <a class="page-link" (click)="changePage(currentPage + 1)">Next</a>
+                    </li>
+                </ul>
+            </nav>
             
         </div>
 

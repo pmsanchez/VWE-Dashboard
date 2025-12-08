@@ -95,17 +95,18 @@ app.get('/api/students/:seminarId', async (req, res) => {
         // Since the foreign key in seminar_registration is stud_id (text), 
         // we join to the student table where student.stud_id = seminar_registration.stud_id
         
-        const { data: studentsData, error: studentsError } = await supabase
-            .from('seminar_registration') // Start the query at the junction table
-            .select(`
-                student (
-                    id, stud_id, name, street_city, city, province, 
-                    country_code, email, phone, type_size, tshirt_size, 
-                    hoodie_size, food_allergies, allergy_details, comments, 
-                    observations, insertion_date, insertion_time, seminar_attendances
-                )
-            `)
-            .eq('sem_id', semIdText) // Filter the registrations by the seminar's text key
+const { data: studentsData, error: studentsError } = await supabase
+    .from('seminar_registration') 
+    .select(`
+        student (
+            id, stud_id, name, street_city, city, province, country_code,
+            email, phone, tshirt_size, hoodie_size, food_allergies, 
+            allergy_details, comments, observations, seminar_attendances, 
+            position, diet_type, status
+        )
+    `)
+    .eq('sem_id', semIdText)
+    .order('name', { foreignTable: 'student', ascending: true });
 
         if (studentsError) {
             console.error('Supabase Error fetching students:', studentsError);
