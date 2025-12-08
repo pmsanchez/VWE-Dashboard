@@ -96,7 +96,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let student of students">
+                        <tr *ngFor="let student of paginatedStudents">
                             <td>{{ student.name }}</td>
                             <td>{{ student.stud_id || 'N/A' }}</td>
                             <td>{{ student.email || 'N/A' }}</td>
@@ -116,6 +116,24 @@
                     </tbody>
                 </table>
             </div>
+
+            <nav *ngIf="totalPages > 1" aria-label="Student Pagination">
+    <ul class="pagination justify-content-center">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+            <a class="page-link" (click)="changePage(currentPage - 1)">Previous</a>
+        </li>
+        
+        <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index" 
+            [class.active]="currentPage === i + 1">
+            <a class="page-link" (click)="changePage(i + 1)">{{ i + 1 }}</a>
+        </li>
+
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <a class="page-link" (click)="changePage(currentPage + 1)">Next</a>
+        </li>
+    </ul>
+</nav>
+            
         </div>
 
     </div>

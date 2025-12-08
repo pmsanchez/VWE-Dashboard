@@ -28,12 +28,34 @@ export class StudentsComponent implements OnInit {
   students: Student[] = [];
   isLoadingStudents: boolean = false;
   studentsErrorMessage: string | null = null;
+
+  // --- Pagination State ---
+  pageSize: number = 10;
+  currentPage: number = 1;
   
   constructor(private studentService: StudentService) { }
 
   ngOnInit(): void {
     this.fetchSeminars();
   }
+
+  // --- Computed Properties ---
+
+/**
+ * Returns the total number of pages required.
+ */
+get totalPages(): number {
+  return Math.ceil(this.students.length / this.pageSize);
+}
+
+/**
+ * Returns the subset of students for the current page.
+ */
+get paginatedStudents(): Student[] {
+  const startIndex = (this.currentPage - 1) * this.pageSize;
+  const endIndex = startIndex + this.pageSize;
+  return this.students.slice(startIndex, endIndex);
+}
 
   // --- 1. Seminar Data Fetching (Dropdown Population) ---
 // --- 1. Seminar Data Fetching (Dropdown Population) ---
@@ -140,6 +162,9 @@ onSeminarChange(): void {
 
     try {
       this.students = await this.studentService.getStudents(seminarId);
+
+      // 💡 Reset pagination here!
+      this.currentPage = 1;
       
     } catch (error: any) {
       console.error(`Failed to load students for seminar ${seminarId}:`, error);
@@ -159,6 +184,16 @@ onSeminarChange(): void {
    */
   public convertToString(value: number | null | undefined): string {
     return String(value);
+  }
+
+  /**
+   * Changes the current page number.
+   * @param page The new page number to navigate to.
+   */
+  changePage(page: number): void { // <--- THIS METHOD IS REQUIRED!
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
   }
 
 // ... rest of the component
