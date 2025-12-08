@@ -23,12 +23,42 @@
                     -- Select a Seminar --
                 </option>
 
-                <option *ngFor="let seminar of seminars" [ngValue]="String(seminar.id)">
+                <option *ngFor="let seminar of seminars" [ngValue]="convertToString(seminar.id)">
                     {{ seminar.name }}
                 </option>
             </select>
         </div>
 
+        <div class="seminar-details-box mb-4" *ngIf="selectedSeminarDetails">
+            <h4 class="text-secondary mb-3">Seminar Details</h4>
+            <div class="details-grid">
+                <div class="detail-item">
+                    <label class="text-muted">Name:</label>
+                    <p class="mb-0 text-primary">{{ selectedSeminarDetails.name }}</p>
+                </div>
+<div class="details-grid">
+    <div class="detail-item">
+        <label class="text-muted">Location:</label>
+        <p class="mb-0">
+            {{ selectedSeminarDetails.location_name }} 
+            <span class="text-muted small">({{ selectedSeminarDetails.location_country_code }})</span>
+        </p>
+    </div>
+    </div>
+                <div class="detail-item">
+                    <label class="text-muted">Start Date:</label>
+                    <p class="mb-0">{{ selectedSeminarDetails.start_date | date }}</p>
+                </div>
+                <div class="detail-item">
+                    <label class="text-muted">End Date:</label>
+                    <p class="mb-0">{{ selectedSeminarDetails.end_date | date }}</p>
+                </div>
+            </div>
+            <div class="mt-3">
+                <label class="text-muted">Description:</label>
+                <p class="small text-wrap">{{ selectedSeminarDetails.description || 'No description provided.' }}</p>
+            </div>
+        </div>
         <hr>
 
         <div class="student-list-view">

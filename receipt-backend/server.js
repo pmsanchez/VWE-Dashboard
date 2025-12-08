@@ -21,24 +21,44 @@ app.use(express.json({ limit: '50mb' })); // To handle large JSON payloads (Base
 
 // SUPPABASE INTEGRATION
 // 2. 💡 NEW: Route to Fetch Seminars
+// receipt-backend/server.js (MODIFIED /api/seminars route)
+
+// receipt-backend/server.js (CLEANED UP /api/seminars route)
+
 app.get('/api/seminars', async (req, res) => {
     try {
-        // Fetch 'id' and 'name' from the 'seminar' table
+        // The select string MUST only contain valid column names and nested relationships.
         const { data, error } = await supabase
             .from('seminar')
-            .select('id, sem_id, name, start_date')
-            .order('start_date', { ascending: true });
+            .select(`
+                id, 
+                sem_id, 
+                name, 
+                description, 
+                start_date, 
+                end_date, 
+                location_id,
+                location (
+                    location_name,
+                    country_code
+                )
+            `)
+            .order('start_date', { ascending: true }); 
 
-        if (error) {
-            console.error('Supabase Error:', error);
-            return res.status(500).json({ message: 'Error fetching seminars from Supabase', details: error.message });
-        }
+        if (error) throw error;
 
-        res.json(data);
+        // Map the Data to flatten the nested object structure.
+        const mappedSeminars = data.map(seminar => ({
+            ...seminar,
+            location_name: seminar.location ? seminar.location.location_name : 'Unknown Location',
+            location_country_code: seminar.location ? seminar.location.country_code : 'N/A'
+        }));
+
+        res.json(mappedSeminars);
 
     } catch (error) {
-        console.error('Server Error:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        console.error('Supabase Error in /api/seminars:', error);
+        res.status(500).json({ message: 'Error fetching seminars' });
     }
 });
 

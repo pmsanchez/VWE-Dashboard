@@ -22,6 +22,7 @@ export class StudentsComponent implements OnInit {
   selectedSeminarId: string | null = null; 
   isLoadingSeminars: boolean = true;
   seminarErrorMessage: string | null = null;
+  selectedSeminarDetails: Seminar | null = null; // <--- NEW PROPERTY
 
   // --- Student List State (for the Table) ---
   students: Student[] = [];
@@ -114,16 +115,22 @@ export class StudentsComponent implements OnInit {
   }
   
   // --- 2. Dropdown Change Handler ---
-  onSeminarChange(): void {
-    // This method is triggered by the (change) event on the <select> element.
-    if (this.selectedSeminarId !== null) {
-        console.log(`Selected Seminar ID: ${this.selectedSeminarId}. Fetching students...`);
-        this.fetchStudents(this.selectedSeminarId);
-    } else {
-      // Clear the list if the selection is somehow reset
-      this.students = [];
-    }
-  }
+onSeminarChange(): void {
+    // This method is triggered by the (change) event on the <select> element.
+    if (this.selectedSeminarId !== null) {
+        console.log(`Selected Seminar ID: ${this.selectedSeminarId}. Fetching students...`);
+        
+        // 💡 UPDATE: Find the full details of the selected seminar
+        const seminarIdNum = parseInt(this.selectedSeminarId, 10);
+        this.selectedSeminarDetails = this.seminars.find(s => s.id === seminarIdNum) || null;
+        
+        this.fetchStudents(this.selectedSeminarId);
+    } else {
+      // Clear the list if the selection is somehow reset
+      this.students = [];
+      this.selectedSeminarDetails = null; // <--- Clear details
+    }
+  }
 
   // --- 3. Student Data Fetching (Table Population) ---
   async fetchStudents(seminarId: string): Promise<void> { 
@@ -141,4 +148,18 @@ export class StudentsComponent implements OnInit {
       this.isLoadingStudents = false;
     }
   }
+
+  // src\app\components\Students\students.component.ts (Add this method)
+
+// ... inside export class StudentsComponent implements OnInit {
+
+  /**
+   * Helper method to convert a number to a string for use in the template [ngValue] binding.
+   * Angular templates do not natively recognize the global 'String' constructor.
+   */
+  public convertToString(value: number | null | undefined): string {
+    return String(value);
+  }
+
+// ... rest of the component
 }

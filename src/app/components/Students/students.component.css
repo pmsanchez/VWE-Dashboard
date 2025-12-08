@@ -32,3 +32,34 @@
     border-color: #ff758c;
 }
 /* Note: You can add table styles here when you implement the student list */
+
+
+/* --- NEW STYLES FOR SEMINAR DETAILS BOX --- */
+
+.seminar-details-box {
+    padding: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    background-color: #ffffff; /* White background for contrast against .bg-lighter-card */
+}
+
+.details-grid {
+    /* Uses CSS Grid for a responsive, clean layout */
+    display: grid;
+    /* Creates columns that are at least 200px wide, distributing remaining space evenly */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px 20px; /* Vertical and horizontal gap */
+}
+
+.detail-item label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.detail-item p {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+}
