@@ -71,7 +71,7 @@
                 <input 
                     type="text" 
                     class="form-control" 
-                    placeholder="Search by Name, ID, or Email..."
+                    placeholder="Search globally by Name, ID, or Email..."
                     [(ngModel)]="searchTerm"
                     (ngModelChange)="onSearchChange()"
                 >
@@ -116,6 +116,51 @@
                             <th>Status</th>
                             <th>Comments</th>
                             <th>Attendance</th>
+                        </tr>
+                        
+                        <tr>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" placeholder="Filter Name" 
+                                       [(ngModel)]="columnFilters['name']" (ngModelChange)="onFilterChange()">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" placeholder="Filter ID" 
+                                       [(ngModel)]="columnFilters['stud_id']" (ngModelChange)="onFilterChange()">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" placeholder="Filter Email" 
+                                       [(ngModel)]="columnFilters['email']" (ngModelChange)="onFilterChange()">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" placeholder="Filter Size" 
+                                       [(ngModel)]="columnFilters['tshirt_size']" (ngModelChange)="onFilterChange()">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" placeholder="Yes/No" 
+                                       [(ngModel)]="columnFilters['food_allergies']" (ngModelChange)="onFilterChange()">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" placeholder="Filter City" 
+                                       [(ngModel)]="columnFilters['city']" (ngModelChange)="onFilterChange()">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" placeholder="Filter Phone" 
+                                       [(ngModel)]="columnFilters['phone']" (ngModelChange)="onFilterChange()">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" placeholder="Filter Role" 
+                                       [(ngModel)]="columnFilters['position']" (ngModelChange)="onFilterChange()">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" placeholder="Filter Diet" 
+                                       [(ngModel)]="columnFilters['diet_type']" (ngModelChange)="onFilterChange()">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" placeholder="Filter Status" 
+                                       [(ngModel)]="columnFilters['status']" (ngModelChange)="onFilterChange()">
+                            </td>
+                            <td></td> 
+                            <td></td> 
                         </tr>
                     </thead>
                     <tbody>

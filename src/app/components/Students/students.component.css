@@ -82,3 +82,18 @@
 .pagination .page-item a {
     cursor: pointer;
 }
+
+.table-responsive thead tr:last-child th,
+.table-responsive thead tr:last-child td {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: #f1f1f1; /* Light gray background for the filter row */
+}
+
+/* Make filter inputs and selects smaller */
+.table-responsive .form-control-sm,
+.table-responsive .form-select-sm {
+    height: calc(1.5em + .4rem + 2px); /* Tighter height for small inputs/selects */
+    font-size: 0.75rem; /* Slightly smaller font */
+    padding: 0.1rem 0.25rem;
+}

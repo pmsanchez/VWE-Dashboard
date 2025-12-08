@@ -34,6 +34,23 @@ export class StudentsComponent implements OnInit {
   // --- Pagination State ---
   pageSize: number = 10;
   currentPage: number = 1;
+
+  // --- New State for Generic Column Filtering ---
+// This map holds filter terms for every column key (e.g., name: 'anto', email: 'test')
+columnFilters: { [key: string]: string } = {
+    name: '',
+    stud_id: '',
+    email: '',
+    tshirt_size: '',
+    hoodie_size: '',
+    city: '',
+    country_code: '',
+    phone: '',
+    position: '',
+    diet_type: '',
+    status: '',
+    // Add any other column keys you want to be able to filter on
+};
   
   constructor(private studentService: StudentService) { }
 
@@ -206,22 +223,60 @@ onSeminarChange(): void {
     }
   }
 
+/**
+ * Returns the list of students after applying the current global search and column filters.
+ */
 get filteredStudents(): Student[] {
     let students = this.students;
-    const term = this.searchTerm.toLowerCase();
-
-    if (term) {
+    const globalTerm = this.searchTerm.toLowerCase();
+    
+    // 1. Apply Global Search Term (Name, ID, Email)
+    if (globalTerm) {
         students = students.filter(student => 
-            // Search criteria: Name, Student ID, or Email
-            student.name.toLowerCase().includes(term) ||
-            (student.stud_id?.toLowerCase() || '').includes(term) ||
-            (student.email?.toLowerCase() || '').includes(term)
+            student.name.toLowerCase().includes(globalTerm) ||
+            (student.stud_id?.toLowerCase() || '').includes(globalTerm) ||
+            (student.email?.toLowerCase() || '').includes(globalTerm)
         );
     }
     
-    // NOTE: If you add status filtering later, it would go here.
+    // 2. Apply Column Filters (Generic Text Match for ALL columns)
+    for (const key of Object.keys(this.columnFilters)) {
+        const filterValue = this.columnFilters[key];
+        
+        if (filterValue) {
+            const filterTerm = filterValue.toLowerCase();
+
+            students = students.filter(student => {
+                const studentValue = (student as any)[key]; 
+                
+                if (studentValue === null || studentValue === undefined) {
+                    return false; // Skip students with missing values
+                }
+
+                // --- SPECIAL HANDLING FOR BOOLEAN ALLERGIES ---
+                if (key === 'food_allergies') {
+                    // Convert boolean to "yes" or "no" string for comparison
+                    const allergyString = studentValue ? 'yes' : 'no';
+                    return allergyString.includes(filterTerm);
+                }
+                // ---------------------------------------------
+
+                // Default: General string comparison for all other columns
+                return String(studentValue).toLowerCase().includes(filterTerm);
+            });
+        }
+    }
 
     return students;
 }
+
+/**
+     * Resets the current page to 1 whenever a column filter value changes.
+     * This ensures the user is seeing filtered results from the beginning of the list.
+     */
+    onFilterChange(): void {
+        this.currentPage = 1;
+    }
+
 // ... rest of the component
 }
