@@ -65,9 +65,11 @@
         <hr>
 
         <div class="student-list-view">
-            <h3 class="text-secondary mb-4">Students List</h3> 
             
-            <div class="search-filter-controls mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="text-secondary mb-0">Students List</h3>
+            </div>
+            <div class="mb-4"></div> <div class="search-filter-controls mb-4">
                 <input 
                     type="text" 
                     class="form-control" 
@@ -164,7 +166,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let student of paginatedStudents">
+                        <tr *ngFor="let student of paginatedStudents"
+                            (click)="openStudentDetails(student)"
+                            class="student-row" 
+                        >
                             <td>{{ student.name }}</td>
                             <td>{{ student.stud_id || 'N/A' }}</td>
                             <td>{{ student.email || 'N/A' }}</td>
@@ -212,5 +217,92 @@
             
         </div>
 
+    </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="isDetailCardOpen"></div>
+
+<div class="student-detail-modal" [class.is-open]="isDetailCardOpen">
+    
+    <div class="modal-content" *ngIf="selectedStudent">
+        <div class="modal-header">
+            <h5 class="modal-title">{{ selectedStudent.name }}'s Details</h5>
+            <button type="button" class="btn-close" (click)="closeStudentDetails()" aria-label="Close"></button>
+        </div>
+        
+        <div class="modal-body">
+            <div class="detail-grid-modal">
+                
+                <div class="detail-item">
+                    <label>Student ID:</label>
+                    <p>{{ selectedStudent.stud_id || 'N/A' }}</p>
+                </div>
+                <div class="detail-item">
+                    <label>Email:</label>
+                    <p>{{ selectedStudent.email || 'N/A' }}</p>
+                </div>
+                <div class="detail-item">
+                    <label>Phone:</label>
+                    <p>{{ selectedStudent.phone || 'N/A' }}</p>
+                </div>
+
+                <div class="detail-item">
+                    <label>City:</label>
+                    <p>{{ selectedStudent.city || 'N/A' }}</p>
+                </div>
+                <div class="detail-item">
+                    <label>Province/State:</label>
+                    <p>{{ selectedStudent.province || 'N/A' }}</p>
+                </div>
+                <div class="detail-item">
+                    <label>Country Code:</label>
+                    <p>{{ selectedStudent.country_code || 'N/A' }}</p>
+                </div>
+                
+                <div class="detail-item">
+                    <label>Role:</label>
+                    <p>{{ selectedStudent.position || 'N/A' }}</p>
+                </div>
+                <div class="detail-item">
+                    <label>Status:</label>
+                    <p><span class="badge bg-primary">{{ selectedStudent.status }}</span></p>
+                </div>
+                <div class="detail-item">
+                    <label>Attendance:</label>
+                    <p>{{ selectedStudent.seminar_attendances || 0 }} total seminars</p>
+                </div>
+
+                <div class="detail-item">
+                    <label>T-Shirt Size:</label>
+                    <p>{{ selectedStudent.tshirt_size || 'N/A' }}</p>
+                </div>
+                <div class="detail-item">
+                    <label>Hoodie Size:</label>
+                    <p>{{ selectedStudent.hoodie_size || 'N/A' }}</p>
+                </div>
+                <div class="detail-item">
+                    <label>Diet Type:</label>
+                    <p>{{ selectedStudent.diet_type || 'N/A' }}</p>
+                </div>
+                
+                <div class="detail-section-full alert" [class.alert-danger]="selectedStudent.food_allergies" [class.alert-success]="!selectedStudent.food_allergies">
+                    <label class="d-block mb-1">Food Allergies: 
+                        <span class="fw-bold">{{ selectedStudent.food_allergies ? 'YES' : 'No' }}</span>
+                    </label>
+                    <p *ngIf="selectedStudent.allergy_details" class="mb-0 small">Details: {{ selectedStudent.allergy_details }}</p>
+                    <p *ngIf="!selectedStudent.food_allergies" class="mb-0 small text-muted">No allergies reported.</p>
+                </div>
+                
+                <div class="detail-section-full">
+                    <label>Comments / Observations:</label>
+                    <p class="small text-wrap">{{ selectedStudent.comments || selectedStudent.observations || 'No specific comments or observations.' }}</p>
+                </div>
+
+            </div>
+        </div>
+        
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeStudentDetails()">Close</button>
+        </div>
     </div>
 </div>

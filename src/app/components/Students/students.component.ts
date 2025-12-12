@@ -35,6 +35,10 @@ export class StudentsComponent implements OnInit {
   pageSize: number = 10;
   currentPage: number = 1;
 
+  // --- New State for Detail Card ---
+selectedStudent: Student | null = null;
+isDetailCardOpen: boolean = false;
+
   // --- New State for Generic Column Filtering ---
 // This map holds filter terms for every column key (e.g., name: 'anto', email: 'test')
 columnFilters: { [key: string]: string } = {
@@ -66,6 +70,23 @@ columnFilters: { [key: string]: string } = {
 get totalPages(): number {
   // Calculate pages based on the filtered list, not the full list
     return Math.ceil(this.filteredStudents.length / this.pageSize);
+}
+
+/**
+ * Sets the selected student and opens the detail card/modal.
+ * @param student The student object to display.
+ */
+openStudentDetails(student: Student): void {
+    this.selectedStudent = student;
+    this.isDetailCardOpen = true; // Used to show the modal in the HTML
+}
+
+/**
+ * Closes the detail card/modal.
+ */
+closeStudentDetails(): void {
+    this.isDetailCardOpen = false;
+    this.selectedStudent = null; // Clear selected student for good measure
 }
 
 /**
