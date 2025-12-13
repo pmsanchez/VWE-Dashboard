@@ -25,27 +25,22 @@ export class StudentsComponent implements OnInit {
   selectedSeminarDetails: Seminar | null = null; // <--- NEW PROPERTY
   // --- New State for Search/Filter ---
   searchTerm: string = ''; // <--- NEW PROPERTY
-
   // --- Student List State (for the Table) ---
   students: Student[] = [];
   isLoadingStudents: boolean = false;
   studentsErrorMessage: string | null = null;
-
   // --- Pagination State ---
   pageSize: number = 10;
   currentPage: number = 1;
-
   // --- New State for Detail Card ---
 selectedStudent: Student | null = null;
 isDetailCardOpen: boolean = false;
-
 // --- New State for Editing ---
 isEditMode: boolean = false;
 editableStudent: Student | null = null;
 isUpdating: boolean = false; // Flag to disable the button during API call
 updateSuccess: boolean = false;
 updateError: string | null = null;
-
   // --- New State for Generic Column Filtering ---
 // This map holds filter terms for every column key (e.g., name: 'anto', email: 'test')
 columnFilters: { [key: string]: string } = {
@@ -62,7 +57,27 @@ columnFilters: { [key: string]: string } = {
     status: '',
     // Add any other column keys you want to be able to filter on
 };
-  
+
+    // ENUMS for dropdowns
+    // 🚀 NEW: Define the fixed size options based on your size_enum
+    sizeOptions: string[] = [
+        'XS', 'S', 'M', 'L', 'XL', 
+        '1XL', '2XL', '3XL', '4XL', '5XL', '6XL'
+    ];
+
+    positionsOptions: string[] = [
+        'Student', 'Staff', 'Guest'
+    ];
+
+    studentStatusOptions: string[] = [
+        'Draft', 'Agreement_Completed', 'Paid', 'Done', 'Cancelled'
+    ];
+
+    dietTypeOptions: string[] = [
+        'Vegetarian', 'Vegan', 'NoPreference'
+    ];
+
+
   constructor(private studentService: StudentService) { }
 
   ngOnInit(): void {

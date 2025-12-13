@@ -266,18 +266,22 @@
                 <div class="detail-item">
                     <label>Role:</label>
                     <p *ngIf="!isEditMode">{{ selectedStudent.position || 'N/A' }}</p>
-                    <input *ngIf="isEditMode && editableStudent" type="text" class="form-control form-control-sm"
-                           [(ngModel)]="editableStudent.position" placeholder="Role (e.g., Student)">
+                    <select *ngIf="isEditMode && editableStudent" class="form-select form-select-sm"
+                           [(ngModel)]="editableStudent.position">
+                            <option *ngFor="let pos of positionsOptions" [ngValue]="pos">
+                            {{ pos }}
+                             </option>
+                    </select>
                 </div>
                 <div class="detail-item">
                     <label>Status:</label>
                     <p *ngIf="!isEditMode"><span class="badge bg-primary">{{ selectedStudent.status }}</span></p>
                     <select *ngIf="isEditMode && editableStudent" class="form-select form-select-sm"
                             [(ngModel)]="editableStudent.status">
-                        <option value="Confirmed">Confirmed</option>
-                        <option value="Draft">Draft</option>
-                        <option value="Cancelled">Cancelled</option>
-                        </select>
+                        <option *ngFor="let status of studentStatusOptions" [ngValue]="status">
+                              {{ status }}
+                    </option>
+                    </select>
                 </div>
 
                 <div class="detail-item">
@@ -298,24 +302,37 @@
                     <input *ngIf="isEditMode && editableStudent" type="text" class="form-control form-control-sm"
                            [(ngModel)]="editableStudent.country_code" placeholder="Country Code (e.g., CA)">
                 </div>
-
-                <div class="detail-item">
-                    <label>T-Shirt Size:</label>
-                    <p *ngIf="!isEditMode">{{ selectedStudent.tshirt_size || 'N/A' }}</p>
-                    <input *ngIf="isEditMode && editableStudent" type="text" class="form-control form-control-sm"
-                           [(ngModel)]="editableStudent.tshirt_size" placeholder="T-Shirt Size">
-                </div>
-                <div class="detail-item">
-                    <label>Hoodie Size:</label>
-                    <p *ngIf="!isEditMode">{{ selectedStudent.hoodie_size || 'N/A' }}</p>
-                    <input *ngIf="isEditMode && editableStudent" type="text" class="form-control form-control-sm"
-                           [(ngModel)]="editableStudent.hoodie_size" placeholder="Hoodie Size">
-                </div>
+<div class="detail-item">
+    <label>T-Shirt Size:</label>
+    <p *ngIf="!isEditMode">{{ selectedStudent.tshirt_size || 'N/A' }}</p>
+    
+    <select *ngIf="isEditMode && editableStudent" class="form-select form-select-sm"
+            [(ngModel)]="editableStudent.tshirt_size">
+        <option *ngFor="let size of sizeOptions" [ngValue]="size">
+            {{ size }}
+        </option>
+    </select>
+</div>
+<div class="detail-item">
+    <label>Hoodie Size:</label>
+    <p *ngIf="!isEditMode">{{ selectedStudent.hoodie_size || 'N/A' }}</p>
+    
+    <select *ngIf="isEditMode && editableStudent" class="form-select form-select-sm"
+            [(ngModel)]="editableStudent.hoodie_size">
+        <option *ngFor="let size of sizeOptions" [ngValue]="size">
+            {{ size }}
+        </option>
+    </select>
+</div>
                 <div class="detail-item">
                     <label>Diet Type:</label>
                     <p *ngIf="!isEditMode">{{ selectedStudent.diet_type || 'N/A' }}</p>
-                    <input *ngIf="isEditMode && editableStudent" type="text" class="form-control form-control-sm"
-                           [(ngModel)]="editableStudent.diet_type" placeholder="Diet Type">
+                    <select *ngIf="isEditMode && editableStudent" class="form-select form-select-sm"
+                           [(ngModel)]="editableStudent.diet_type">
+                                   <option *ngFor="let diet of dietTypeOptions" [ngValue]="diet">
+            {{ diet }}
+        </option>
+        </select>
                 </div>
 
                 <div class="detail-item">
