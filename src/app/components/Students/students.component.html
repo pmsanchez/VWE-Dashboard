@@ -187,7 +187,11 @@
                             
                             <td>{{ student.position }}</td>
                             <td>{{ student.diet_type }}</td>
-                            <td>{{ student.status }}</td>
+                            <td>
+                             <span class="badge" [class]="getStatusClass(student.status)">
+                                {{ student.status }}
+                            </span>
+                            </td>
                             <td>
                                 <span *ngIf="student.comments" title="{{ student.comments }}">View</span>
                                 <span *ngIf="!student.comments">N/A</span>
@@ -273,16 +277,22 @@
                              </option>
                     </select>
                 </div>
-                <div class="detail-item">
-                    <label>Status:</label>
-                    <p *ngIf="!isEditMode"><span class="badge bg-primary">{{ selectedStudent.status }}</span></p>
-                    <select *ngIf="isEditMode && editableStudent" class="form-select form-select-sm"
-                            [(ngModel)]="editableStudent.status">
-                        <option *ngFor="let status of studentStatusOptions" [ngValue]="status">
-                              {{ status }}
-                    </option>
-                    </select>
-                </div>
+<div class="detail-item">
+    <label>Status:</label>
+    
+    <p *ngIf="!isEditMode">
+        <span class="badge" [class]="getStatusClass(selectedStudent.status)">
+            {{ selectedStudent.status }}
+        </span>
+    </p>
+    
+    <select *ngIf="isEditMode && editableStudent" class="form-select form-select-sm"
+            [(ngModel)]="editableStudent.status">
+        <option *ngFor="let status of studentStatusOptions" [ngValue]="status">
+            {{ status }}
+        </option>
+    </select>
+</div>
 
                 <div class="detail-item">
                     <label>City:</label>

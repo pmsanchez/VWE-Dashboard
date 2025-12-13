@@ -70,8 +70,32 @@ columnFilters: { [key: string]: string } = {
     ];
 
     studentStatusOptions: string[] = [
-        'Draft', 'Agreement_Completed', 'Paid', 'Done', 'Cancelled'
+        'Draft', 'Agreement_Completed', 'Paid', 'Done', 'Canceled'
     ];
+
+    /**
+     * Returns the appropriate Bootstrap badge class based on the student's status.
+     * @param status The status string (e.g., 'Paid').
+     * @returns The corresponding Bootstrap class string (e.g., 'bg-info').
+     */
+    getStatusClass(status: string | undefined): string {
+        if (!status) return 'bg-light text-dark'; // Default for missing status
+
+        switch (status.toLowerCase()) {
+            case 'draft':
+                return 'bg-secondary'; // Grey
+            case 'agreement_completed':
+                return 'bg-warning text-dark'; // Yellow (use text-dark for readability)
+            case 'paid':
+                return 'bg-info text-dark'; // Light Blue (use text-dark for readability)
+            case 'done':
+                return 'bg-success'; // Green
+            case 'canceled':
+                return 'bg-danger'; // Red
+            default:
+                return 'bg-primary'; // Default blue for unknown status
+        }
+    }
 
     dietTypeOptions: string[] = [
         'Vegetarian', 'Vegan', 'NoPreference'
