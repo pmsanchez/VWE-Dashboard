@@ -78,14 +78,6 @@
                     (ngModelChange)="onSearchChange()"
                     style="flex-grow: 1;"
                 >
-                <button 
-        class="btn btn-warning" 
-        (click)="openBulkUpdateModal()"
-        [disabled]="selectedStudentIds.size === 0"
-        title="Update selected students"
-    >
-        Bulk Update ({{ selectedStudentIds.size }})
-    </button>
             </div>
 
             <div *ngIf="selectedSeminarId === null && !isLoadingSeminars" class="alert alert-warning text-center">
@@ -221,6 +213,18 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <div class="bulk-actions-group">
+            <button 
+                class="btn btn-warning" 
+                (click)="openBulkUpdateModal()"
+                [disabled]="selectedStudentIds.size === 0"
+                title="Update selected students"
+            >
+                Bulk Update ({{ selectedStudentIds.size }})
+            </button>
+            
             </div>
 
             <nav *ngIf="totalPages > 1" aria-label="Student Pagination">
