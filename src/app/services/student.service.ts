@@ -2,10 +2,11 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'; 
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Seminar } from '../interfaces/seminar'; // Import the interface
 import { Student } from '../interfaces/student'; // Import the Student interface
+
 
 @Injectable({
   providedIn: 'root'
@@ -37,5 +38,26 @@ export class StudentService {
       this.http.get<Student[]>(url) // Uses the new Student interface type
     );
   }
+
+  /**
+     * Updates the details of a single student.
+     * Assumes the backend API expects a PUT/PATCH request with the student ID in the URL,
+     * and the entire updated Student object in the body.
+     * Returns an Observable<Student> because the component expects an Observable response for handling next/error.
+     */
+    updateStudent(student: Student): Observable<Student> {
+        // Assuming your Student interface has a unique identifier like 'stud_id'
+        const studentId = student.stud_id; 
+        
+        if (!studentId) {
+            throw new Error("Cannot update student: Student ID is missing.");
+        }
+        
+        const url = `${this.backendBaseUrl}/api/students/${studentId}`; 
+        
+        // Use http.put for full replacement or http.patch for partial update. 
+        // We'll use PUT here as we are sending the full (updated) object.
+        return this.http.put<Student>(url, student);
+    }
 
 }

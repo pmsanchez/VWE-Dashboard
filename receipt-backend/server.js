@@ -126,6 +126,71 @@ const { data: studentsData, error: studentsError } = await supabase
 });
 
 
+// Route to Update a Student's details
+// Endpoint: PUT /api/students/:studentId
+app.put('/api/students/:studentId', async (req, res) => {
+    // 1. Get the unique student identifier (stud_id) from the URL
+    const studentId = req.params.studentId; 
+    
+    // 2. Get the updated data from the request body
+    const updatedStudentData = req.body;
+
+    // IMPORTANT: Remove any fields that Supabase expects to manage (e.g., primary key 'id' 
+    // if it's auto-managed, or any joined/calculated fields).
+    // We remove 'id' (the numeric PK) to prevent accidental update errors.
+    // Also remove the calculated 'seminar_attendances' as it should not be written back.
+    delete updatedStudentData.id;
+    delete updatedStudentData.seminar_attendances;
+    
+    // The stud_id (text key) is used for the filter, not the payload.
+    // Ensure we are only sending columns that exist directly on the 'student' table.
+
+    try {
+        // Use the Supabase .update() method.
+        // The first argument is the payload (the data to update).
+        // The .eq() method ensures only the student with the matching stud_id is updated.
+        const { data, error } = await supabase
+            .from('student') // Target the main student table
+            .update(updatedStudentData)
+            .eq('stud_id', studentId) // Filter using the text key from the URL
+            .select(`
+                id, stud_id, name, street_city, city, province, country_code,
+                email, phone, tshirt_size, hoodie_size, food_allergies, 
+                allergy_details, comments, observations, seminar_attendances, 
+                position, diet_type, status
+            `)
+            .single(); // Expect a single updated record
+
+        if (error) {
+            console.error('Supabase Error updating student:', error);
+            // Check for specific database errors (e.g., constraint violations)
+            return res.status(400).json({ 
+                message: 'Failed to update student details in database.', 
+                details: error.message 
+            });
+        }
+        
+        if (!data) {
+             // This happens if the stud_id was valid but no row was matched/updated
+            return res.status(404).json({ message: 'Student not found or no changes made.' });
+        }
+
+        // Return the successfully updated (and possibly enriched by the DB) student data
+        res.json(data);
+
+    } catch (error) {
+        console.error('Server Error updating student:', error);
+        res.status(500).json({ message: 'Internal Server Error during student update.' });
+    }
+});
+
+
+
+
+
+
+
+
 // Secure route to proxy the request to Veryfi
 app.post('/api/process-receipt', async (req, res) => {
   const veryfiUrl = process.env.VERYFI_URL;

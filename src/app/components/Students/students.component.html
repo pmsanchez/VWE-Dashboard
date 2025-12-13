@@ -226,83 +226,144 @@
     
     <div class="modal-content" *ngIf="selectedStudent">
         <div class="modal-header">
-            <h5 class="modal-title">{{ selectedStudent.name }}'s Details</h5>
+            <h5 class="modal-title">
+                {{ selectedStudent.name }}'s Details 
+                <span *ngIf="isEditMode" class="badge bg-warning ms-2">Editing</span>
+            </h5>
+            
             <button type="button" class="btn-close" (click)="closeStudentDetails()" aria-label="Close"></button>
         </div>
         
         <div class="modal-body">
-            <div class="detail-grid-modal">
+            
+            <div *ngIf="updateError" class="alert alert-danger">{{ updateError }}</div>
+            <div *ngIf="updateSuccess" class="alert alert-success">Student details updated successfully!</div>
+            
+            <div class="detail-grid-modal" *ngIf="selectedStudent">
                 
                 <div class="detail-item">
                     <label>Student ID:</label>
-                    <p>{{ selectedStudent.stud_id || 'N/A' }}</p>
+                    <p>{{ selectedStudent.stud_id || 'N/A' }}</p> </div>
+                <div class="detail-item">
+                    <label>Name:</label>
+                    <p *ngIf="!isEditMode">{{ selectedStudent.name }}</p>
+                    <input *ngIf="isEditMode && editableStudent" type="text" class="form-control form-control-sm"
+                           [(ngModel)]="editableStudent.name" placeholder="Full Name">
                 </div>
                 <div class="detail-item">
                     <label>Email:</label>
-                    <p>{{ selectedStudent.email || 'N/A' }}</p>
+                    <p *ngIf="!isEditMode">{{ selectedStudent.email || 'N/A' }}</p>
+                    <input *ngIf="isEditMode && editableStudent" type="email" class="form-control form-control-sm"
+                           [(ngModel)]="editableStudent.email" placeholder="Email Address">
                 </div>
+                
                 <div class="detail-item">
                     <label>Phone:</label>
-                    <p>{{ selectedStudent.phone || 'N/A' }}</p>
+                    <p *ngIf="!isEditMode">{{ selectedStudent.phone || 'N/A' }}</p>
+                    <input *ngIf="isEditMode && editableStudent" type="tel" class="form-control form-control-sm"
+                           [(ngModel)]="editableStudent.phone" placeholder="Phone Number">
+                </div>
+                <div class="detail-item">
+                    <label>Role:</label>
+                    <p *ngIf="!isEditMode">{{ selectedStudent.position || 'N/A' }}</p>
+                    <input *ngIf="isEditMode && editableStudent" type="text" class="form-control form-control-sm"
+                           [(ngModel)]="editableStudent.position" placeholder="Role (e.g., Student)">
+                </div>
+                <div class="detail-item">
+                    <label>Status:</label>
+                    <p *ngIf="!isEditMode"><span class="badge bg-primary">{{ selectedStudent.status }}</span></p>
+                    <select *ngIf="isEditMode && editableStudent" class="form-select form-select-sm"
+                            [(ngModel)]="editableStudent.status">
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Draft">Draft</option>
+                        <option value="Cancelled">Cancelled</option>
+                        </select>
                 </div>
 
                 <div class="detail-item">
                     <label>City:</label>
-                    <p>{{ selectedStudent.city || 'N/A' }}</p>
+                    <p *ngIf="!isEditMode">{{ selectedStudent.city || 'N/A' }}</p>
+                    <input *ngIf="isEditMode && editableStudent" type="text" class="form-control form-control-sm"
+                           [(ngModel)]="editableStudent.city" placeholder="City">
                 </div>
                 <div class="detail-item">
                     <label>Province/State:</label>
-                    <p>{{ selectedStudent.province || 'N/A' }}</p>
+                    <p *ngIf="!isEditMode">{{ selectedStudent.province || 'N/A' }}</p>
+                    <input *ngIf="isEditMode && editableStudent" type="text" class="form-control form-control-sm"
+                           [(ngModel)]="editableStudent.province" placeholder="Province/State">
                 </div>
                 <div class="detail-item">
                     <label>Country Code:</label>
-                    <p>{{ selectedStudent.country_code || 'N/A' }}</p>
-                </div>
-                
-                <div class="detail-item">
-                    <label>Role:</label>
-                    <p>{{ selectedStudent.position || 'N/A' }}</p>
-                </div>
-                <div class="detail-item">
-                    <label>Status:</label>
-                    <p><span class="badge bg-primary">{{ selectedStudent.status }}</span></p>
-                </div>
-                <div class="detail-item">
-                    <label>Attendance:</label>
-                    <p>{{ selectedStudent.seminar_attendances || 0 }} total seminars</p>
+                    <p *ngIf="!isEditMode">{{ selectedStudent.country_code || 'N/A' }}</p>
+                    <input *ngIf="isEditMode && editableStudent" type="text" class="form-control form-control-sm"
+                           [(ngModel)]="editableStudent.country_code" placeholder="Country Code (e.g., CA)">
                 </div>
 
                 <div class="detail-item">
                     <label>T-Shirt Size:</label>
-                    <p>{{ selectedStudent.tshirt_size || 'N/A' }}</p>
+                    <p *ngIf="!isEditMode">{{ selectedStudent.tshirt_size || 'N/A' }}</p>
+                    <input *ngIf="isEditMode && editableStudent" type="text" class="form-control form-control-sm"
+                           [(ngModel)]="editableStudent.tshirt_size" placeholder="T-Shirt Size">
                 </div>
                 <div class="detail-item">
                     <label>Hoodie Size:</label>
-                    <p>{{ selectedStudent.hoodie_size || 'N/A' }}</p>
+                    <p *ngIf="!isEditMode">{{ selectedStudent.hoodie_size || 'N/A' }}</p>
+                    <input *ngIf="isEditMode && editableStudent" type="text" class="form-control form-control-sm"
+                           [(ngModel)]="editableStudent.hoodie_size" placeholder="Hoodie Size">
                 </div>
                 <div class="detail-item">
                     <label>Diet Type:</label>
-                    <p>{{ selectedStudent.diet_type || 'N/A' }}</p>
+                    <p *ngIf="!isEditMode">{{ selectedStudent.diet_type || 'N/A' }}</p>
+                    <input *ngIf="isEditMode && editableStudent" type="text" class="form-control form-control-sm"
+                           [(ngModel)]="editableStudent.diet_type" placeholder="Diet Type">
+                </div>
+
+                <div class="detail-item">
+                    <label>Attendance:</label>
+                    <p>{{ selectedStudent.seminar_attendances || 0 }} total seminars</p>
                 </div>
                 
-                <div class="detail-section-full alert" [class.alert-danger]="selectedStudent.food_allergies" [class.alert-success]="!selectedStudent.food_allergies">
-                    <label class="d-block mb-1">Food Allergies: 
-                        <span class="fw-bold">{{ selectedStudent.food_allergies ? 'YES' : 'No' }}</span>
-                    </label>
-                    <p *ngIf="selectedStudent.allergy_details" class="mb-0 small">Details: {{ selectedStudent.allergy_details }}</p>
-                    <p *ngIf="!selectedStudent.food_allergies" class="mb-0 small text-muted">No allergies reported.</p>
-                </div>
+<div class="detail-section-full alert" 
+    [class.alert-danger]="isEditMode ? editableStudent?.food_allergies : selectedStudent.food_allergies" 
+    [class.alert-success]="isEditMode ? !editableStudent?.food_allergies : !selectedStudent.food_allergies">
+    
+    <label class="d-block mb-1">Food Allergies: 
+        <span *ngIf="!isEditMode" class="fw-bold">{{ selectedStudent.food_allergies ? 'YES' : 'No' }}</span>
+        
+        <div *ngIf="isEditMode && editableStudent" class="form-check form-switch d-inline-block ms-2">
+             <input type="checkbox" class="form-check-input" id="foodAllergiesCheck"
+                   [(ngModel)]="editableStudent.food_allergies">
+        </div>
+    </label>
+    
+    <label *ngIf="!isEditMode" class="mb-0 small d-block">Details: </label>
+    <p *ngIf="!isEditMode" class="mb-0 small text-wrap">{{ selectedStudent.allergy_details || 'No details.' }}</p>
+    
+    <textarea *ngIf="isEditMode && editableStudent" class="form-control form-control-sm mt-1" 
+              [(ngModel)]="editableStudent.allergy_details" rows="2" placeholder="Allergy details..."></textarea>
+</div>
                 
                 <div class="detail-section-full">
                     <label>Comments / Observations:</label>
-                    <p class="small text-wrap">{{ selectedStudent.comments || selectedStudent.observations || 'No specific comments or observations.' }}</p>
+                    <p *ngIf="!isEditMode" class="small text-wrap">{{ selectedStudent.comments || selectedStudent.observations || 'No specific comments or observations.' }}</p>
+                    <textarea *ngIf="isEditMode && editableStudent" class="form-control form-control-sm mt-1" 
+                              [(ngModel)]="editableStudent.comments" rows="3" placeholder="Comments or Observations..."></textarea>
                 </div>
 
             </div>
         </div>
         
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" (click)="closeStudentDetails()">Close</button>
+            <button *ngIf="!isEditMode" type="button" class="btn btn-secondary" (click)="closeStudentDetails()">Close</button>
+            <button *ngIf="!isEditMode" type="button" class="btn btn-primary" (click)="enterEditMode()">
+                <i class="bi bi-pencil-square"></i> Edit
+            </button>
+
+            <button *ngIf="isEditMode" type="button" class="btn btn-danger" (click)="cancelEditMode()" [disabled]="isUpdating">Cancel</button>
+            <button *ngIf="isEditMode" type="button" class="btn btn-success" (click)="confirmUpdate()" [disabled]="isUpdating">
+                <span *ngIf="isUpdating" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                {{ isUpdating ? 'Updating...' : 'Confirm Update' }}
+            </button>
         </div>
     </div>
 </div>

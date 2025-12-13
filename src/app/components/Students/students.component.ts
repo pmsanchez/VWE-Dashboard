@@ -39,6 +39,13 @@ export class StudentsComponent implements OnInit {
 selectedStudent: Student | null = null;
 isDetailCardOpen: boolean = false;
 
+// --- New State for Editing ---
+isEditMode: boolean = false;
+editableStudent: Student | null = null;
+isUpdating: boolean = false; // Flag to disable the button during API call
+updateSuccess: boolean = false;
+updateError: string | null = null;
+
   // --- New State for Generic Column Filtering ---
 // This map holds filter terms for every column key (e.g., name: 'anto', email: 'test')
 columnFilters: { [key: string]: string } = {
@@ -79,14 +86,25 @@ get totalPages(): number {
 openStudentDetails(student: Student): void {
     this.selectedStudent = student;
     this.isDetailCardOpen = true; // Used to show the modal in the HTML
+
+    // 🚀 NEW: Clear any previous update status when opening a new student's details
+    this.updateSuccess = false;
+    this.updateError = null;
+    this.isEditMode = false; // Ensure it opens in view mode
 }
 
 /**
- * Closes the detail card/modal.
+ * Overrides the existing close method to ensure edit mode is cancelled first.
  */
 closeStudentDetails(): void {
     this.isDetailCardOpen = false;
-    this.selectedStudent = null; // Clear selected student for good measure
+    this.selectedStudent = null;
+    this.isEditMode = false; // Ensure edit mode is off
+    this.editableStudent = null; // Clear all temporary data
+
+    // 🚀 NEW: Clear the success/error banner state when the modal closes
+    this.updateSuccess = false; 
+    this.updateError = null;
 }
 
 /**
@@ -298,6 +316,69 @@ get filteredStudents(): Student[] {
     onFilterChange(): void {
         this.currentPage = 1;
     }
+
+    /**
+ * Enters Edit Mode: Copies student data and switches view.
+ */
+enterEditMode(): void {
+    if (this.selectedStudent) {
+        // Create a deep copy of the student data to avoid changing the original data
+        // until the update is successful.
+        this.editableStudent = { ...this.selectedStudent }; 
+        this.isEditMode = true;
+        this.updateSuccess = false;
+        this.updateError = null;
+    }
+}
+
+/**
+ * Exits Edit Mode without saving changes.
+ */
+cancelEditMode(): void {
+    this.isEditMode = false;
+    this.editableStudent = null; // Clear the temporary data
+}
+
+/**
+ * Calls the API service to save the updated student data.
+ */
+confirmUpdate(): void {
+    if (!this.editableStudent || this.isUpdating) {
+        return;
+    }
+
+    this.isUpdating = true;
+    this.updateSuccess = false;
+    this.updateError = null;
+
+    // TODO: 1. Replace this with your actual student service update call.
+    this.studentService.updateStudent(this.editableStudent).subscribe({
+        next: (updatedStudent) => {
+            // Update the main student list with the saved data
+            const index = this.students.findIndex(s => s.stud_id === updatedStudent.stud_id);
+            if (index !== -1) {
+                this.students[index] = updatedStudent;
+            }
+
+            // Update the currently viewed student and exit edit mode
+            this.selectedStudent = updatedStudent;
+            this.isEditMode = false;
+            this.isUpdating = false;
+            this.updateSuccess = true; // Show success message briefly
+
+            // Re-trigger filtering/pagination to refresh the table view
+            // You may need to manually trigger a change detection or recalculate filteredStudents
+            this.onFilterChange(); 
+        },
+        error: (err) => {
+            this.isUpdating = false;
+            this.updateError = 'Update failed: ' + (err.error?.message || 'Server error.');
+            console.error('Student update error:', err);
+        }
+    });
+}
+
+
 
 // ... rest of the component
 }
