@@ -70,7 +70,7 @@ columnFilters: { [key: string]: string } = {
     ];
 
     studentStatusOptions: string[] = [
-        'Draft', 'Agreement_Completed', 'Paid', 'Done', 'Canceled'
+        'Draft', 'Agreement_Completed', 'Paid', 'Alumni', 'Canceled'
     ];
 
     /**
@@ -88,7 +88,7 @@ columnFilters: { [key: string]: string } = {
                 return 'bg-warning text-dark'; // Yellow (use text-dark for readability)
             case 'paid':
                 return 'bg-info text-dark'; // Light Blue (use text-dark for readability)
-            case 'done':
+            case 'Alumni':
                 return 'bg-success'; // Green
             case 'canceled':
                 return 'bg-danger'; // Red
@@ -101,6 +101,15 @@ columnFilters: { [key: string]: string } = {
         'Vegetarian', 'Vegan', 'NoPreference'
     ];
 
+    // --- NEW Bulk Update State ---
+selectedStudentIds: Set<string> = new Set<string>();
+isBulkUpdateModalOpen: boolean = false;
+bulkUpdateField: string | null = null; // e.g., 'status', 'position'
+bulkUpdateValue: any = null;
+bulkUpdateStatus: { success: boolean, error: string | null } = { success: false, error: null };
+isBulkUpdating: boolean = false;
+// -----------------------------
+
 
   constructor(private studentService: StudentService) { }
 
@@ -109,6 +118,113 @@ columnFilters: { [key: string]: string } = {
   }
 
   // --- Computed Properties ---
+
+toggleSelection(student: Student): void {
+    // 🚀 FIX: Check if stud_id is null/undefined before using it
+    if (!student.stud_id) {
+        console.warn('Cannot select student: stud_id is missing.');
+        return; 
+    }
+    
+    // Now we can safely assume studId is a string.
+    // TypeScript knows that if the check above failed, studId must be of type 'string'.
+    const studId = student.stud_id;
+    
+    if (this.selectedStudentIds.has(studId)) {
+        this.selectedStudentIds.delete(studId);
+    } else {
+        this.selectedStudentIds.add(studId);
+    }
+}
+
+/**
+ * Checks if a student is selected.
+ */
+isSelected(student: Student): boolean {
+    // 🚀 FIX: Check if stud_id is null/undefined. 
+    // If it's missing, it cannot be selected, so return false.
+    if (!student.stud_id) {
+        return false;
+    }
+    
+    // Now that we've checked for null, TypeScript knows student.stud_id is a string.
+    return this.selectedStudentIds.has(student.stud_id);
+}
+
+// src/app/components/Students/students.component.ts
+
+/**
+ * Toggles selection of all students on the current page.
+ */
+toggleSelectAll(): void {
+    const allSelected = this.paginatedStudents.every(student => this.isSelected(student));
+
+    if (allSelected) {
+        // Deselect all
+        this.paginatedStudents.forEach(student => {
+            // 🚀 FIX: Only attempt to delete the ID if it is a valid string
+            if (student.stud_id) {
+                this.selectedStudentIds.delete(student.stud_id);
+            }
+        });
+    } else {
+        // Select all
+        this.paginatedStudents.forEach(student => {
+            // 🚀 FIX: Only attempt to add the ID if it is a valid string
+            if (student.stud_id) {
+                this.selectedStudentIds.add(student.stud_id);
+            }
+        });
+    }
+}
+
+/**
+ * Opens the bulk update modal.
+ */
+openBulkUpdateModal(): void {
+    if (this.selectedStudentIds.size === 0) {
+        alert('Please select at least one student for bulk update.');
+        return;
+    }
+    this.isBulkUpdateModalOpen = true;
+    this.bulkUpdateField = null;
+    this.bulkUpdateValue = null;
+    this.bulkUpdateStatus = { success: false, error: null };
+}
+
+/**
+ * Closes the bulk update modal and clears temporary state.
+ */
+closeBulkUpdateModal(): void {
+    this.isBulkUpdateModalOpen = false;
+    this.bulkUpdateField = null;
+    this.bulkUpdateValue = null;
+    this.bulkUpdateStatus = { success: false, error: null };
+    this.isBulkUpdating = false;
+}
+
+// 💡 NEW Getter Methods (Fixing the previous HTML parser error)
+/**
+ * Getter: Checks if all visible students on the current page are selected.
+ */
+get allCurrentPageSelected(): boolean {
+    if (this.paginatedStudents.length === 0) {
+        return false;
+    }
+    return this.paginatedStudents.every(student => this.isSelected(student));
+}
+
+/**
+ * Getter: Checks if some (but not all) visible students are selected.
+ */
+get isIndeterminate(): boolean {
+    const selectedCount = this.paginatedStudents.filter(student => this.isSelected(student)).length;
+    
+    // Indeterminate if count > 0 AND count < total
+    return selectedCount > 0 && selectedCount < this.paginatedStudents.length;
+}
+
+
 
 /**
  * Returns the total number of pages required.
@@ -417,7 +533,62 @@ confirmUpdate(): void {
     });
 }
 
+/**
+ * Executes the bulk update API call.
+ */
+performBulkUpdate(): void {
+    // We already check for nulls/empty selections via the [disabled] tag on the button,
+    // but this is a final safety check.
+    if (!this.bulkUpdateField || this.bulkUpdateValue === null || this.selectedStudentIds.size === 0) {
+        this.bulkUpdateStatus.error = 'Please select a field and a value.';
+        return;
+    }
 
+    this.isBulkUpdating = true;
+    this.bulkUpdateStatus = { success: false, error: null };
+    
+    // Create non-null array of IDs
+    const idsArray = Array.from(this.selectedStudentIds);
+    
+    // Create the dynamic payload: { status: 'Paid' }
+    const updatePayload: { [key: string]: any } = {};
+    // Use the non-null assertion operator (!) because we just checked for null above
+    updatePayload[this.bulkUpdateField!] = this.bulkUpdateValue;
+
+    this.studentService.bulkUpdateStudents(idsArray, updatePayload).subscribe({
+        next: (response) => {
+            // Update successful
+            this.bulkUpdateStatus.success = true;
+            this.isBulkUpdating = false;
+
+            // 💡 IMPORTANT: Update the local UI data to reflect the change
+            this.updateLocalStudentData(idsArray, this.bulkUpdateField!, this.bulkUpdateValue);
+            
+            // Clear selections after successful update
+            this.selectedStudentIds.clear();
+        },
+        error: (err) => {
+            this.isBulkUpdating = false;
+            this.bulkUpdateStatus.error = 'Bulk update failed: ' + (err.error?.message || 'Server error.');
+            console.error('Bulk update error:', err);
+        }
+    });
+}
+
+/**
+ * Helper to update the students array and the filtered/paginated views.
+ */
+updateLocalStudentData(ids: string[], field: string, value: any): void {
+    this.students.forEach(student => {
+        // We already know IDs are valid strings here
+        if (student.stud_id && ids.includes(student.stud_id)) {
+            // Update the specific field on the student object
+            (student as any)[field] = value; 
+        }
+    });
+    // Re-trigger filtering/pagination to refresh the table view
+    this.onFilterChange(); 
+}
 
 // ... rest of the component
 }

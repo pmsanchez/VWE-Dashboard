@@ -223,6 +223,59 @@ app.post('/api/process-receipt', async (req, res) => {
   }
 });
 
+// server.js (New Route Handler - Add this block)
+
+app.patch('/api/students/bulk-update', async (req, res) => {
+    // Expected body: { ids: ['VWE000038', 'VWE000040'], updates: { status: 'Paid' } }
+    const { ids, updates } = req.body;
+
+    // 1. Validation Check
+    if (!ids || !Array.isArray(ids) || ids.length === 0 || !updates || Object.keys(updates).length === 0) {
+        return res.status(400).json({ message: 'Invalid bulk update request: Missing IDs or update payload.' });
+    }
+
+    // 2. Security/Sanitization (Optional but HIGHLY RECOMMENDED)
+    // You should ensure 'updates' only contains keys that are safe to update.
+    // E.g., const allowedFields = ['status', 'position', 'diet_type', 'tshirt_size', 'hoodie_size', 'food_allergies'];
+    // const safeUpdates = Object.keys(updates)
+    //     .filter(key => allowedFields.includes(key))
+    //     .reduce((obj, key) => {
+    //         obj[key] = updates[key];
+    //         return obj;
+    //     }, {});
+
+    try {
+        // 3. Perform Bulk Update using Supabase
+        // The .update() method sets the new values defined in 'updates'.
+        // The .in() method filters the update to ONLY students whose 'stud_id' is within the 'ids' array.
+        const { error } = await supabase
+            .from('student') // Change 'student' to your actual table name if different
+            .update(updates) 
+            .in('stud_id', ids); 
+
+        if (error) {
+            console.error('Supabase Error during bulk update:', error);
+            // Check for specific database errors (e.g., integrity constraints)
+            return res.status(500).json({ 
+                message: 'Database failed to execute bulk update.', 
+                details: error.message 
+            });
+        }
+        
+        // 4. Success Response
+        // Supabase returns null data on successful update, so we return a confirmation.
+        res.json({ 
+            message: `Successfully updated ${ids.length} students.`, 
+            count: ids.length, 
+            updatedFields: updates 
+        });
+
+    } catch (error) {
+        console.error('Server Error during bulk update:', error);
+        res.status(500).json({ message: 'Internal server error during bulk update process.' });
+    }
+});
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Backend server running on http://localhost:${PORT}`);

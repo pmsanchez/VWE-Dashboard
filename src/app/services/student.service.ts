@@ -60,4 +60,27 @@ export class StudentService {
         return this.http.put<Student>(url, student);
     }
 
+// src/app/services/student.service.ts (Add this method)
+
+// ... existing methods ...
+
+    /**
+     * Performs a bulk update on multiple students.
+     * @param studentIds Array of stud_id (text keys).
+     * @param updatePayload Object containing the field and the new value { fieldName: newValue }.
+     * @returns Observable confirming the operation (the server response can vary).
+     */
+    bulkUpdateStudents(studentIds: string[], updatePayload: { [key: string]: any }): Observable<any> {
+        const url = `${this.backendBaseUrl}/api/students/bulk-update`; 
+        
+        const body = { 
+            ids: studentIds,
+            updates: updatePayload
+        };
+
+        // Use PATCH for partial updates, as we are only sending one field/value
+        return this.http.patch<any>(url, body); 
+    }
+
+
 }
