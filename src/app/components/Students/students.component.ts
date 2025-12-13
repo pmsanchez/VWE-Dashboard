@@ -109,6 +109,9 @@ bulkUpdateValue: any = null;
 bulkUpdateStatus: { success: boolean, error: string | null } = { success: false, error: null };
 isBulkUpdating: boolean = false;
 // -----------------------------
+// NEW: Deleting state and status for the UI
+isDeleting: boolean = false;
+deleteStatus: { success: boolean, error: string | null } = { success: false, error: null };
 
 
   constructor(private studentService: StudentService) { }
@@ -587,6 +590,69 @@ updateLocalStudentData(ids: string[], field: string, value: any): void {
         }
     });
     // Re-trigger filtering/pagination to refresh the table view
+    this.onFilterChange(); 
+}
+
+/**
+ * Initiates the bulk delete process with a high-risk confirmation.
+ */
+performBulkDelete(): void {
+    
+    // Clear previous status messages
+    this.deleteStatus = { success: false, error: null };
+    
+    if (this.selectedStudentIds.size === 0) {
+        this.deleteStatus.error = 'No students selected for deletion.';
+        return;
+    }
+
+    const studentCount = this.selectedStudentIds.size;
+
+    // *** High-Risk Confirmation Dialogue (Native Confirm) ***
+    const confirmationMessage = 
+        `🔥 PERMANENT DELETE: You are about to permanently delete ${studentCount} selected students from the database. ` + 
+        `\n\nAre you ABSOLUTELY sure you want to proceed? This action CANNOT be undone.`;
+    
+    if (!confirm(confirmationMessage)) {
+        return; // Stop operation if user cancels
+    }
+    
+    // Proceed with deletion
+    this.isDeleting = true;
+    const idsArray = Array.from(this.selectedStudentIds);
+    
+    this.studentService.bulkDeleteStudents(idsArray).subscribe({
+        next: (response) => {
+            // 1. Update state
+            this.deleteStatus.success = true;
+            this.isDeleting = false;
+
+            // 2. Remove students from local array (students) immediately
+            // This filters out all students whose IDs are in the deleted list.
+            this.students = this.students.filter(s => !idsArray.includes(s.stud_id!));
+            
+            // 3. Clear selections and re-apply filters/pagination
+            this.selectedStudentIds.clear();
+            this.applyFiltersAndPagination(); // This refreshes the table view
+        },
+        error: (err) => {
+            this.isDeleting = false;
+            this.deleteStatus.error = 'Deletion failed: ' + (err.error?.message || 'Server error.');
+            console.error('Bulk delete error:', err);
+        }
+    });
+}
+
+
+/**
+ * Re-applies the search, filters, and pagination after a data change 
+ * (like bulk delete or update) to refresh the table view.
+ * * In this component, this is achieved by resetting the current page 
+ * and allowing the pure Getters (filteredStudents, paginatedStudents) to re-run.
+ */
+applyFiltersAndPagination(): void {
+    // Calling onFilterChange() is the key, as it resets the current page to 1.
+    // The rest of the filtering/pagination logic is handled automatically by the getters.
     this.onFilterChange(); 
 }
 

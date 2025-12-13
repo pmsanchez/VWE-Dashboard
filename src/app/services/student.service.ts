@@ -1,7 +1,7 @@
 // src/app/services/student.service.ts (New File)
 
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http'; 
+import { HttpClient, HttpHeaders } from '@angular/common/http'; 
 import { firstValueFrom, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Seminar } from '../interfaces/seminar'; // Import the interface
@@ -82,5 +82,25 @@ export class StudentService {
         return this.http.patch<any>(url, body); 
     }
 
+    // ⭐️ NEW METHOD FOR BULK DELETION (STEP 2)
+    /**
+     * Executes a bulk deletion of students by their IDs.
+     * @param studentIds An array of student IDs (stud_id) to delete.
+     * @returns An Observable of the API response.
+     */
+    bulkDeleteStudents(studentIds: string[]): Observable<any> {
+        const url = `${this.backendBaseUrl}/api/students/bulk-delete`;
 
+        // The DELETE request needs an options object to send data in the body
+        const options = {
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json',
+            }),
+            body: {
+                ids: studentIds // IDs sent in the body of the DELETE request
+            }
+        };
+
+        return this.http.delete<any>(url, options);
+    }
 }

@@ -276,6 +276,44 @@ app.patch('/api/students/bulk-update', async (req, res) => {
     }
 });
 
+// DELETE route for bulk student deletion
+app.delete('/api/students/bulk-delete', async (req, res) => {
+    // The IDs are passed in the request body from the Angular service
+    const { ids } = req.body; 
+
+    // 1. Validation Check
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ message: 'Invalid bulk delete request: Missing IDs.' });
+    }
+
+    try {
+        // 2. Perform Bulk Delete using Supabase
+        // Deletes rows from the 'student' table where 'stud_id' is in the array of 'ids'.
+        const { error } = await supabase
+            .from('student') // 💡 Ensure 'student' matches your actual Supabase table name
+            .delete() 
+            .in('stud_id', ids); // The .in() filter targets all rows matching the array of IDs
+
+        if (error) {
+            console.error('Supabase Error during bulk delete:', error);
+            return res.status(500).json({ 
+                message: 'Database failed to execute bulk delete.', 
+                details: error.message 
+            });
+        }
+        
+        // 3. Success Response
+        res.json({ 
+            message: `Successfully deleted ${ids.length} students.`, 
+            count: ids.length
+        });
+
+    } catch (error) {
+        console.error('Server Error during bulk delete:', error);
+        res.status(500).json({ message: 'Internal server error during bulk delete process.' });
+    }
+});
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Backend server running on http://localhost:${PORT}`);

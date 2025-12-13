@@ -217,13 +217,23 @@
 
             <div class="bulk-actions-group">
             <button 
-                class="btn btn-warning" 
+                class="btn btn-warning me-2" 
                 (click)="openBulkUpdateModal()"
                 [disabled]="selectedStudentIds.size === 0"
                 title="Update selected students"
             >
                 Bulk Update ({{ selectedStudentIds.size }})
             </button>
+
+            <button 
+        class="btn btn-danger" 
+        (click)="performBulkDelete()"
+        [disabled]="selectedStudentIds.size === 0 || isDeleting"
+        title="Delete selected students permanently"
+    >
+        <span *ngIf="isDeleting" class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+        {{ isDeleting ? 'Deleting...' : 'Delete Selected' }} ({{ selectedStudentIds.size }})
+    </button>
             
             </div>
 
